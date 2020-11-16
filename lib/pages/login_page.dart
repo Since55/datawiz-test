@@ -15,19 +15,23 @@ class _LoginPageState extends State<LoginPage> {
 
   String _login,
          _password;
+
   User user;
 
+  var invalidData = Text('');
+
+  final loginFocus = FocusNode();
+  final passwordFocus = FocusNode(); // to change focus after submitting login
+  final lgButtonFocus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
-    final _loginFocus = FocusNode();
-    final _passwordFocus = FocusNode(); // to change focus after submitting login
+
     LoginApi loginApi = new LoginApi();
     // Login input field
     final login = TextFormField(
-      focusNode: _loginFocus,
+      focusNode: loginFocus,
       keyboardType: TextInputType.emailAddress,
-      autofocus: false,
       decoration: InputDecoration(
           hintText: 'Login',
           hintStyle: TextStyle(
@@ -41,17 +45,20 @@ class _LoginPageState extends State<LoginPage> {
           )
       ),
       onChanged: (value){
-        _login = value;
+        setState(() {
+          _login = value;
+          print('changed');
+        });
+//        _login = value;
         print(_login);
       },
       onFieldSubmitted: (term) {
-        _fieldFocusChange(context, _loginFocus, _passwordFocus);
+        _fieldFocusChange(context, loginFocus, passwordFocus);
       },
     );
 // Password input field
     final password = TextFormField(
-      focusNode: _passwordFocus,
-      autofocus: false,
+      focusNode: passwordFocus,
       obscureText: true, // to hide password
       decoration: InputDecoration(
           hintText: 'Password',
@@ -66,31 +73,40 @@ class _LoginPageState extends State<LoginPage> {
           )
       ),
       onChanged: (value){
-        _password = value;
+        setState(() {
+          _password = value;
+        });
       },
       onFieldSubmitted: (value){
-        _passwordFocus.unfocus();
 
+        _fieldFocusChange(context, passwordFocus, lgButtonFocus);
       },
     );
 
-    var invalidData = Text('');
+
 
     final loginButton = RaisedButton(
-      color: Colors.lightBlue,
+      splashColor: Colors.white,
+      focusNode: lgButtonFocus,
+      color: Colors.black,
       textColor: Colors.white,
       child: Text('Login'),
       onPressed: (){
+        print('Logging in');
         _formKey.currentState.save();
         if(util.isNullEmpty(_login) || util.isNullEmpty(_password)) {
           print('empty');
+          setState(() {
+            invalidData = Text('Login and password can\'t be empty', style:
+              TextStyle(
+                fontSize: 15,
+                color: Colors.deepOrange
+              ),
+            );
+          });
+
         } else {
-          loginApi.login(_login, _password);
-          if(loginApi.isLoginSuccessful()) {
-            Navigator.pushNamed(context, '/home');
-          } else {
-            invalidData = Text('Invalid login or password');
-          }
+          loginApi.login(_login, _password, context);
         }
       },
     );
@@ -98,33 +114,33 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Login'),
+        backgroundColor: Colors.black,
       ),
       body:
-          Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Form(
-              autovalidate: true,
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  login,
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                    child: password,
-                  ),
-                  Row(
+          ListView(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Form(
+                  autovalidate: true,
+                  key: _formKey,
+                  child: Column(
                     children: <Widget>[
+                      login,
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        child: password,
+                      ),
+                      invalidData,
                       loginButton,
-                      invalidData
                     ],
-                  )
-                ],
-              ),
-            ),
+                  ),
+                ),
 
 
+              )
+            ],
           )
-
       );
 
 

@@ -9,10 +9,6 @@ class Showcase {
 
   Showcase({this.name, this.imageUrl, this.stand, this.planogram});
 
-  Showcase.map(dynamic obj) {
-    this.imageUrl = obj['image'];
-    this.name = obj['name'];
-  }
 
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();

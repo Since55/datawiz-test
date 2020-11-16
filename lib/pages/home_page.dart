@@ -40,13 +40,15 @@ class HomePageState extends State<HomePage> {
     return Card(
       child: InkWell(
         splashColor: Colors.grey,
-        onTap: (){Navigator.push(context,
+        onTap: (){
+          Navigator.push(context,
           MaterialPageRoute(
             builder: (context) => DetailPage(),
             settings: RouteSettings(
               arguments: _showcases[index],
             )
           ));
+          print('Stand ' + _showcases[index].stand.toString());
         },
         child: Column(
           children: <Widget>[

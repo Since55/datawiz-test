@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -25,7 +26,6 @@ class NetworkUtil {
   final JsonDecoder _decoder = new JsonDecoder();
 
 //  Get request
-//  TODO: delete me
   Future<dynamic> get(String url, {headers}) {
     return http.get(url, headers: headers).then((http.Response response) {
       final String res = response.body;
@@ -71,3 +71,4 @@ class ImageArgs {
 
   ImageArgs(this.image);
 }
+
